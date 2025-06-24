@@ -170,5 +170,5 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 <div align="center">
   <p><strong>Happy Learning! 📡 ··· --- ···</strong></p>
-  <p><em>Made with ❤️ for the amateur radio and learning community</em></p>
+  <p><em>Made with ❤️ for the community</em></p>
 </div>
