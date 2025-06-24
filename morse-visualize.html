@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Morse Code PCB Visualizer</title>
+    <link rel="stylesheet" href="morse-visualize.css">
+</head>
+<body>
+    <div class="title">MORSE CODE PCB VISUALIZER</div>
+    
+    <div class="pcb-board">
+        <div class="circuit-lines" id="circuitLines"></div>
+        
+        <div class="letter-display">
+            <div class="current-letter" id="currentLetter">A</div>
+            <div class="morse-pattern" id="morsePattern">• —</div>
+        </div>
+        
+        <div class="morse-lights" id="morseLights"></div>
+        
+        <div class="controls">
+            <button class="btn" id="startBtn">START</button>
+            <button class="btn" id="pauseBtn">PAUSE</button>
+            <button class="btn" id="resetBtn">RESET</button>
+            <button class="btn audio-toggle" id="audioBtn">SOUND OFF</button>
+        </div>
+        
+        <div class="speed-control">
+            <span class="speed-label">Speed:</span>
+            <input type="range" id="speedSlider" class="speed-slider" min="0.5" max="3" step="0.1" value="1">
+            <span class="speed-label" id="speedValue">1.0x</span>
+        </div>
+        
+        <div class="progress-container">
+            <div class="progress-label">
+                <span id="currentProgress">Letter 1 of 26</span>
+                <span id="currentLetter2">A</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress" id="progress"></div>
+            </div>
+        </div>
+    </div>
+    <script src="morse-visualize.js"></script>
+</body>
+</html>
