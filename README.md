@@ -164,7 +164,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - 🐛 **Bug Reports**: [Open an issue](https://github.com/Dimitry4Now/morse-visualization/issues)
 - 💡 **Feature Requests**: [Start a discussion](https://github.com/Dimitry4Now/morse-visualization/discussions)
-- 📧 **Contact**: dimitarbetinski@sorsix.com
+- 📧 **Contact**: dimitarbetinski@gmail.com
 
 ---
 
