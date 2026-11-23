@@ -8,167 +8,69 @@
 </div>
 
 <div align="center">
-  <p><em>A cyberpunk-themed, interactive Morse code learning tool that visualizes the entire alphabet with stunning PCB-inspired animations</em></p>
+  <p><em>Learn the Morse alphabet on a glowing circuit board: each letter keyed out in light and sound, at the speed you choose.</em></p>
+  <p><strong><a href="https://dimitry4now.github.io/morse-visualization/">Try it live</a></strong></p>
 </div>
 
-## ✨ Features
+![The visualizer after sending A: the letter revealed above its dot and dash](docs/screenshot.png)
 
-### 🎨 Visual Excellence
-- **Cyberpunk PCB Design**: Authentic printed circuit board aesthetics with glowing green elements
-- **Dynamic Circuit Lines**: Animated flowing traces that simulate electrical pathways
-- **LED-Style Morse Lights**: Interactive dots and dashes that light up with realistic glow effects
-- **Pulsing Animations**: Smooth transitions and eye-catching visual feedback
-- **Responsive Design**: Optimized for desktop, tablet, and mobile devices
+## ✨ What it does
 
-### 🔊 Audio Experience
-- **Authentic Morse Tones**: Historically accurate dot (800Hz) and dash (400Hz) frequencies
-- **Toggle Sound Control**: Easy on/off audio switching
-- **Synchronized Audio-Visual**: Perfect timing between lights and sound
+- **Keys every letter A–Z**, round the alphabet: the code plays first, then the letter is revealed, so you can try to read it before it appears.
+- **Light and sound together**: each dot or dash lights up for exactly as long as its tone plays, then stays dimly lit, so the letter's pattern builds up as it is sent.
+- **One tone, like a real key**: 650 Hz for dots and dashes alike, with soft edges so it doesn't click. Dots and dashes differ only in length.
+- **Speed in words per minute**: 5–25 WPM, changeable while it plays.
+- **Keyboard**: Space starts and pauses, R resets.
+- **Works on a phone** as well as on a desktop. No dependencies, no build step.
 
-### ⚡ Interactive Controls
-- **Variable Speed Control**: Adjust playback speed from 0.5x to 3x (Doesn't work)
-- **Play/Pause/Reset**: Full control over the learning session
-- **Progress Tracking**: Visual progress bar and letter counter
-- **Continuous Loop**: Automatically cycles through the entire alphabet
+## ⏱️ Timing
 
-### 📚 Educational Value
-- **Complete Alphabet**: All 26 letters A-Z with their Morse code patterns
-- **Visual Learning**: See the pattern before hearing it
-- **Muscle Memory**: Repetition helps build recognition skills
-- **Speed Training**: Gradually increase speed as you improve (Doesn't work)
+Morse is counted in units. At *W* words per minute one unit lasts 1200 / *W* ms, the standard "PARIS" definition (120 ms at 10 WPM).
 
-## 🚀 Quick Start
+| | Units |
+|---|---|
+| Dot | 1 |
+| Dash | 3 |
+| Gap between the dots and dashes of a letter | 1 |
+| Letter shown before its code | 2 |
+| Pause after a letter | 7 |
 
-### Option 1: Direct Download
-1. Download the HTML file
-2. Open in any modern web browser
-3. Click "START" to begin learning!
+The pause after a letter is longer than the standard 3 units on purpose: learners get the letters at full speed but more time between them (Farnsworth spacing), which is how Morse is usually taught.
 
-### Option 2: Clone Repository
-```bash
-git clone https://github.com/yourusername/morse-code-pcb-visualizer.git
-cd morse-code-pcb-visualizer
-```
+## 🚀 Running it
 
-Open `index.html` in your browser or serve it with a local web server:
+It's one static page: open `index.html` in a browser, or serve the folder (`python3 -m http.server 8000`). The live version is on GitHub Pages, from the `master` branch.
 
 ```bash
-# Using Python 3
-python -m http.server 8000
-
-# Using Node.js (with npx)
-npx serve .
-
-# Using PHP
-php -S localhost:8000
+git clone https://github.com/Dimitry4Now/morse-visualization.git
 ```
 
-## 🎮 How to Use
+## 🎯 Learning tips
 
-1. **Start the Visualizer**: Click the "START" button to begin the alphabet sequence
-2. **Adjust Speed**: Use the speed slider to find your comfortable learning pace (Doesn't work)
-3. **Enable Audio**: Toggle "SOUND ON" for audio feedback
-4. **Watch and Learn**: Observe each letter's Morse pattern as it lights up
-5. **Practice**: Use pause/reset to focus on specific letters
+1. Start slow (5–8 WPM) and turn the sound on: Morse is learned by ear.
+2. Try to name each letter before it's revealed.
+3. Pause (Space) to stay on a letter that keeps catching you out.
+4. Speed up a step at a time once a speed feels easy.
 
-## 🛠️ Technical Details
+## 💡 Ideas
 
-### Built With
-- **Pure HTML5**: No external dependencies
-- **CSS3 Animations**: Smooth, hardware-accelerated effects
-- **Vanilla JavaScript**: Lightweight and fast
-- **Web Audio API**: High-quality tone generation
-
-### Browser Compatibility
-- ✅ Chrome 60+
-- ✅ Firefox 55+
-- ✅ Safari 11+
-- ✅ Edge 79+
-- ✅ Mobile browsers (iOS Safari, Chrome Mobile)
-
-### Performance Features
-- Optimized animations using CSS transforms
-- Efficient DOM manipulation
-- Minimal memory footprint
-- 60fps smooth animations
-
-## 📱 Screenshots
-
-### Desktop View
-```
-┌─────────────────────────────────────────────────┐
-│              MORSE CODE PCB VISUALIZER          │
-│  ┌───────────────────────────────────────────┐  │
-│  │     ╔═════════════════════════════════╗   │  │
-│  │     ║             A                   ║   │  │
-│  │     ║           • —                   ║   │  │
-│  │     ║                                 ║   │  │
-│  │     ║    ●────────────────────●       ║   │  │
-│  │     ║                                 ║   │  │
-│  │     ║  [START] [PAUSE] [RESET] [🔊]   ║   │  │
-│  │     ║                                 ║   │  │
-│  │     ║  Speed: ────●──── 1.0x          ║   │  │
-│  │     ║  ████████████░░░░░░░░░░░ 46%     ║   │  │
-│  │     ╚═════════════════════════════════╝   │  │
-│  └───────────────────────────────────────────┐  │
-└─────────────────────────────────────────────────┘
-```
-
-## 🎯 Learning Tips
-
-### For Beginners
-1. Start with slow speed (0.5x - 0.7x) (Doesn't work)
-2. Focus on visual patterns first
-3. Enable audio once comfortable with visuals
-4. Practice one letter at a time using pause
-
-### For Advanced Users
-1. Increase speed to 2x - 3x for challenge (Doesn't work)
-2. Try to predict the next letter before it appears
-3. Use it as a refresher tool
-4. Practice recognition without looking at the letter
-
-## 🤝 Contributing
-
-Contributions are welcome! Here are some ways you can help:
-
-### Ideas for Enhancement
-- [ ] Add numbers (0-9) and punctuation
-- [ ] Custom text input mode
+- [ ] Numbers (0–9) and punctuation
+- [ ] Custom text input
 - [ ] Prosigns (procedural signals)
-- [ ] WPM (Words Per Minute) display
 - [ ] Quiz mode with score tracking
-- [ ] Export learning progress
 - [ ] Different color themes
-- [ ] Keyboard shortcuts
-- [ ] Touch controls for mobile
-
-### How to Contribute
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- Inspired by vintage electronic equipment and PCB designs
-- Morse code frequencies based on international amateur radio standards
-- Thanks to the web development community for CSS animation techniques
+MIT, see [LICENSE](LICENSE).
 
 ## 📞 Support
 
-- 🐛 **Bug Reports**: [Open an issue](https://github.com/Dimitry4Now/morse-visualization/issues)
-- 💡 **Feature Requests**: [Start a discussion](https://github.com/Dimitry4Now/morse-visualization/discussions)
+- 🐛 **Bug reports**: [open an issue](https://github.com/Dimitry4Now/morse-visualization/issues)
 - 📧 **Contact**: dimitarbetinski@gmail.com
 
 ---
 
 <div align="center">
-  <p><strong>Happy Learning! 📡 ··· --- ···</strong></p>
-  <p><em>Made with ❤️ for the community</em></p>
+  <p><strong>Happy learning! 📡 ··· --- ···</strong></p>
 </div>
