@@ -36,6 +36,11 @@ body {
             position: relative;
             max-width: 1000px;
             width: 100%;
+            /* Width includes the padding and border, so it fits a phone. */
+            box-sizing: border-box;
+            /* The decorative circuit lines stay inside the board instead of
+               widening the page. */
+            overflow: hidden;
             backdrop-filter: blur(10px);
         }
 
