@@ -6,11 +6,26 @@ const morseCode = {
             'Y': '-.--', 'Z': '--..'
         };
 
+        // Morse timing is counted in units: a dot is 1, a dash 3, the gap
+        // between symbols 1. One unit lasts 1200 / WPM milliseconds, the
+        // standard ("PARIS") definition of words per minute.
+        const DOT = 1;
+        const DASH = 3;
+        const SYMBOL_GAP = 1;
+        // Learners get more time between letters than the standard 3 units
+        // (Farnsworth spacing): the letter is shown first, and stays a moment.
+        const SHOW_LETTER = 2;
+        const LETTER_GAP = 7;
+        // One tone for both: dots and dashes differ only in length.
+        const TONE_HZ = 650;
+
         let currentIndex = 0;
         let isRunning = false;
-        let animationStep = 0;
+        let phase = 'show'; // show the letter, key its symbols, then hold it
+        let symbolIndex = 0;
+        let keyed = false;
         let currentTimeout;
-        let speedMultiplier = 1;
+        let wpm = 10;
         let audioEnabled = false;
         let audioContext;
         const letters = Object.keys(morseCode);
@@ -29,30 +44,41 @@ const morseCode = {
         const currentProgress = document.getElementById('currentProgress');
         const currentLetter2 = document.getElementById('currentLetter2');
 
+        function unitMs() {
+            return 1200 / wpm;
+        }
+
         // Audio functions
         function initAudio() {
             if (!audioContext) {
                 audioContext = new (window.AudioContext || window.webkitAudioContext)();
             }
+            // Browsers start audio suspended until a click.
+            if (audioContext.state === 'suspended') {
+                audioContext.resume();
+            }
         }
 
-        function playTone(frequency, duration) {
+        /** A keyed tone: full volume for its length, with 5 ms edges so it doesn't click. */
+        function playTone(seconds) {
             if (!audioEnabled || !audioContext) return;
-            
+
             const oscillator = audioContext.createOscillator();
             const gainNode = audioContext.createGain();
-            
             oscillator.connect(gainNode);
             gainNode.connect(audioContext.destination);
-            
-            oscillator.frequency.value = frequency;
+            oscillator.frequency.value = TONE_HZ;
             oscillator.type = 'sine';
-            
-            gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
-            
-            oscillator.start(audioContext.currentTime);
-            oscillator.stop(audioContext.currentTime + duration);
+
+            const now = audioContext.currentTime;
+            const edge = Math.min(0.005, seconds / 4);
+            gainNode.gain.setValueAtTime(0, now);
+            gainNode.gain.linearRampToValueAtTime(0.15, now + edge);
+            gainNode.gain.setValueAtTime(0.15, now + seconds - edge);
+            gainNode.gain.linearRampToValueAtTime(0, now + seconds);
+
+            oscillator.start(now);
+            oscillator.stop(now + seconds);
         }
 
         function createCircuitLines() {
@@ -97,58 +123,59 @@ const morseCode = {
         }
 
         function clearAllLights() {
-            const lights = morseLightsEl.children;
-            Array.from(lights).forEach(light => light.classList.remove('active'));
+            Array.from(morseLightsEl.children).forEach(light => light.classList.remove('active', 'done'));
             currentLetterEl.classList.remove('active');
         }
 
+        function after(units) {
+            currentTimeout = setTimeout(animateStep, units * unitMs());
+        }
+
+        /**
+         * One step of playback. Each symbol lights, and sounds, for exactly its
+         * length, then stays dimly lit, so the pattern builds up as it is sent.
+         */
         function animateStep() {
             if (!isRunning) return;
 
-            const letter = letters[currentIndex];
-            const morse = morseCode[letter];
+            const morse = morseCode[letters[currentIndex]];
             const lights = morseLightsEl.children;
 
-            if (animationStep === 0) {
-                updateDisplay(letter);
+            if (phase === 'show') {
+                updateDisplay(letters[currentIndex]);
                 clearAllLights();
-                animationStep = 1;
-                currentTimeout = setTimeout(animateStep, 100 / speedMultiplier);
-            } else if (animationStep <= morse.length) {
-                const lightIndex = animationStep - 1;
-                const symbol = morse[lightIndex];
-                lights[lightIndex].classList.add('active');
-                
-                // Play sound
-                if (audioEnabled) {
-                    const frequency = symbol === '.' ? 800 : 400;
-                    const duration = (symbol === '.' ? 0.15 : 0.45) / speedMultiplier;
-                    playTone(frequency, duration);
-                }
-                
-                animationStep++;
-                const delay = symbol === '.' ? 300 : 700;
-                currentTimeout = setTimeout(animateStep, delay / speedMultiplier);
-            } else if (animationStep === morse.length + 1) {
-                currentLetterEl.classList.add('active');
-                animationStep++;
-                currentTimeout = setTimeout(animateStep, 1500 / speedMultiplier);
-            } else {
-                clearAllLights();
-                animationStep = 0;
-                currentIndex++;
-                
-                if (currentIndex >= letters.length) {
-                    currentIndex = 0;
-                }
-                
-                currentTimeout = setTimeout(animateStep, 500 / speedMultiplier);
+                phase = 'key';
+                symbolIndex = 0;
+                keyed = false;
+                return after(SHOW_LETTER);
             }
+
+            if (phase === 'key') {
+                const units = morse[symbolIndex] === '.' ? DOT : DASH;
+                if (!keyed) {
+                    lights[symbolIndex].classList.add('active');
+                    playTone((units * unitMs()) / 1000);
+                    keyed = true;
+                    return after(units);
+                }
+                lights[symbolIndex].classList.replace('active', 'done');
+                keyed = false;
+                symbolIndex++;
+                if (symbolIndex < morse.length) return after(SYMBOL_GAP);
+                phase = 'hold';
+                currentLetterEl.classList.add('active');
+                return after(LETTER_GAP);
+            }
+
+            // The letter has been held: on to the next one, round the alphabet.
+            currentIndex = (currentIndex + 1) % letters.length;
+            phase = 'show';
+            animateStep();
         }
 
         function start() {
+            initAudio();
             if (!isRunning) {
-                initAudio();
                 isRunning = true;
                 startBtn.textContent = 'RUNNING...';
                 startBtn.classList.add('running');
@@ -158,9 +185,7 @@ const morseCode = {
 
         function pause() {
             isRunning = false;
-            if (currentTimeout) {
-                clearTimeout(currentTimeout);
-            }
+            clearTimeout(currentTimeout);
             startBtn.textContent = 'START';
             startBtn.classList.remove('running');
         }
@@ -168,12 +193,13 @@ const morseCode = {
         function reset() {
             pause();
             currentIndex = 0;
-            animationStep = 0;
+            phase = 'show';
             updateDisplay(letters[currentIndex]);
             clearAllLights();
         }
 
         function toggleAudio() {
+            initAudio();
             audioEnabled = !audioEnabled;
             audioBtn.textContent = audioEnabled ? 'SOUND ON' : 'SOUND OFF';
             audioBtn.style.color = audioEnabled ? '#00ff88' : '#00ff41';
@@ -185,9 +211,20 @@ const morseCode = {
         resetBtn.addEventListener('click', reset);
         audioBtn.addEventListener('click', toggleAudio);
 
+        // Takes effect from the next symbol, also while playing.
         speedSlider.addEventListener('input', (e) => {
-            speedMultiplier = parseFloat(e.target.value);
-            speedValue.textContent = speedMultiplier.toFixed(1) + 'x';
+            wpm = parseInt(e.target.value, 10);
+            speedValue.textContent = wpm + ' WPM';
+        });
+
+        // Space starts and pauses, R resets.
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space') {
+                e.preventDefault();
+                isRunning ? pause() : start();
+            } else if (e.key === 'r' || e.key === 'R') {
+                reset();
+            }
         });
 
         // Initialize
